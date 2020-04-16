@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: `1 to 60`,
+    title: `1to60`,
     description: `Click from 1 to 60 as fast as you can`,
     author: `krsntn`,
   },
@@ -18,13 +18,13 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `gatsby-starter-default`,
-        short_name: `starter`,
+        name: `1to60`,
+        short_name: `1to60`,
         start_url: `/`,
-        background_color: `#663399`,
-        theme_color: `#663399`,
+        background_color: `#007bff`,
+        theme_color: `#007bff`,
         display: `minimal-ui`,
-        icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
+        icon: `src/images/icon.png`, // This path is relative to the root of the site.
       },
     },
     `gatsby-plugin-sass`,

@@ -55,10 +55,12 @@ const Main = () => {
       <div className={css.time}>{(time / 1000).toFixed(2)}</div>
       <div
         className={`${css.currentNumber} text-light ${
-          currentNumber === 60 ? 'bg-success' : 'bg-primary'
+          !freeze && currentNumber === 60 ? 'bg-success' : ''
+        } ${!freeze && currentNumber !== 60 ? 'bg-primary' : ''} ${
+          freeze ? 'bg-danger' : ''
         } font-weight-bold`}
       >
-        {currentNumber}
+        {freeze ? 'Game Over' : currentNumber}
       </div>
       <div className={css.box}>
         {gameStatus === 0 && (
