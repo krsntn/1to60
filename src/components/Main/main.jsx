@@ -36,6 +36,7 @@ const Main = () => {
 
   useEffect(() => {
     if (gameStatus === 1 && intervalId === undefined) {
+      // start game
       setFreeze(false);
       setTime(0);
       setCurrentNumber(1);
@@ -43,9 +44,15 @@ const Main = () => {
         setTime((prevTime) => prevTime + 10);
       }, 10);
       setIntervalId(id);
-    } else if (gameStatus !== 1) {
-      setIntervalId();
+    } else if (gameStatus === 0) {
+      // back to menu
       clearInterval(intervalId);
+      setIntervalId();
+      setTime(0);
+    } else if (gameStatus === 2) {
+      // end game
+      clearInterval(intervalId);
+      setIntervalId();
     }
   }, [gameStatus, intervalId]);
 
@@ -55,7 +62,6 @@ const Main = () => {
 
   const resetGame = () => {
     setGameStatus(0);
-    setTime(0);
     setCurrentNumber(1);
     setFreeze(false);
   };
@@ -64,7 +70,11 @@ const Main = () => {
     event.preventDefault();
     const name = document.querySelector('#inlineFormInputName').value;
 
-    if (blockedNames.includes(name)) {
+    if (
+      name.trim().length === 0 ||
+      name.length > 30 ||
+      blockedNames.includes(name)
+    ) {
       alert('Invalid name.');
       return;
     }
@@ -72,6 +82,7 @@ const Main = () => {
     const data = {
       name: name,
       speed: time / 1000,
+      time: firebase.database.ServerValue.TIMESTAMP,
     };
     ref.push(data);
 

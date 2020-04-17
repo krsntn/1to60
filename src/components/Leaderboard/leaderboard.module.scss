@@ -8,6 +8,7 @@
   text-align: left;
   background: #f1f1f1;
   font-size: 18px;
+  margin: 0;
 
   tbody {
     th,
@@ -15,14 +16,23 @@
       padding-top: 2px;
       padding-bottom: 2px;
       position: relative;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
 
+      &:nth-child(1) {
+        width: 10px;
+      }
+      &:nth-child(3) {
+        width: 85px;
+      }
       &:hover {
         .tooltips {
           visibility: visible;
         }
       }
       .name {
-        max-width: 200px;
+        max-width: 100px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -38,6 +48,11 @@
         background: #212529;
         color: $background;
       }
+    }
+
+    .datetime {
+      font-size: 14px;
+      vertical-align: middle;
     }
 
     .emptyRow {
