@@ -4,6 +4,7 @@ import Leaderboard from '../Leaderboard';
 import css from './main.module.scss';
 import firebase from 'firebase';
 import { startDB } from '../utils/firebase-config';
+import blockedNames from '../utils/blockedNames';
 
 startDB();
 const database = firebase.database();
@@ -62,6 +63,12 @@ const Main = () => {
   const submitName = (event) => {
     event.preventDefault();
     const name = document.querySelector('#inlineFormInputName').value;
+
+    if (blockedNames.includes(name)) {
+      alert('Invalid name.');
+      return;
+    }
+
     const data = {
       name: name,
       speed: time / 1000,

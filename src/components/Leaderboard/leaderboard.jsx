@@ -26,7 +26,9 @@ const Leaderboard = (props) => {
 
   useEffect(() => {
     if (db) {
-      db.on('value', gotData, errData);
+      db.orderByChild('speed')
+        .limitToFirst(20)
+        .on('value', gotData, errData);
     }
   }, [db]);
 
@@ -41,7 +43,7 @@ const Leaderboard = (props) => {
               <div className={css.name}>{record.name}</div>
               <span className={css.tooltips}>{record.name}</span>
             </td>
-            <td>{record.speed}</td>
+            <td>{parseFloat(record.speed).toFixed(2)}</td>
           </tr>
         );
       });
