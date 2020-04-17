@@ -1,0 +1,47 @@
+@import '../../styles/variables.module.scss';
+
+.table {
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+  border-radius: 10px;
+  text-align: left;
+  background: #f1f1f1;
+  font-size: 18px;
+
+  tbody {
+    th,
+    td {
+      padding-top: 2px;
+      padding-bottom: 2px;
+      position: relative;
+
+      &:hover {
+        .tooltips {
+          visibility: visible;
+        }
+      }
+      .name {
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .tooltips {
+        visibility: hidden;
+        border-radius: 5px;
+        padding: 5px 10px;
+        position: absolute;
+        z-index: 1;
+        font-size: 1rem;
+        background: #212529;
+        color: $background;
+      }
+    }
+
+    .emptyRow {
+      height: 60px;
+    }
+  }
+}

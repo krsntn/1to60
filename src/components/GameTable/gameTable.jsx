@@ -3,8 +3,8 @@ import css from './gameTable.module.scss';
 
 const generateArray = (startNum, totalSize) => {
   const array = [];
-  for (var i = 0, num = startNum; i < totalSize; i++, startNum++) {
-    array[i] = startNum;
+  for (var i = 0, num = startNum; i < totalSize; i++, num++) {
+    array[i] = num;
   }
   array.sort(() => Math.random() - 0.5);
 
@@ -52,21 +52,20 @@ const GameTable = (props) => {
     const columns = [];
     for (let j = row * 5; j < row * 5 + 5; j++) {
       columns.push(
-        <td
-          key={j}
-          className={css.column}
-          onClick={() =>
-            firstArray[j] === '' || freeze ? null : onClick(firstArray[j])
-          }
-        >
+        <td key={j} className={css.column}>
           {firstArray[j] !== '' && (
             <button
               type="button"
+              onClick={() =>
+                firstArray[j] === '' || freeze ? null : onClick(firstArray[j])
+              }
               className={`${css.button} btn ${
                 freeze && firstArray[j] === currentNumber ? 'btn-danger' : ''
               } ${
                 freeze && firstArray[j] !== currentNumber ? 'btn-dark' : ''
-              } ${!freeze ? 'btn-primary' : ''} btn-block`}
+              } ${!freeze ? 'btn-primary' : ''} ${
+                !freeze && firstArray[j] === currentNumber ? 'btn-info' : ''
+              } btn-block`}
             >
               {firstArray[j]}
             </button>

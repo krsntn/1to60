@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import GameTable from '../GameTable';
+import Leaderboard from '../Leaderboard';
 import css from './main.module.scss';
+import firebase from 'firebase';
+import { startDB } from '../utils/firebase-config';
+
+startDB();
+const database = firebase.database();
+const ref = database.ref('leaderboard');
 
 const Main = () => {
   const [currentNumber, setCurrentNumber] = useState(1);
@@ -15,6 +22,7 @@ const Main = () => {
         setCurrentNumber((prevState) => ++prevState);
       } else {
         // win
+        setCurrentNumber('Finished');
         setGameStatus(2);
       }
     } else {
@@ -26,7 +34,7 @@ const Main = () => {
   };
 
   useEffect(() => {
-    if (gameStatus === 1) {
+    if (gameStatus === 1 && intervalId === undefined) {
       setFreeze(false);
       setTime(0);
       setCurrentNumber(1);
@@ -34,10 +42,11 @@ const Main = () => {
         setTime((prevTime) => prevTime + 10);
       }, 10);
       setIntervalId(id);
-    } else {
+    } else if (gameStatus !== 1) {
+      setIntervalId();
       clearInterval(intervalId);
     }
-  }, [gameStatus]);
+  }, [gameStatus, intervalId]);
 
   const startGame = () => {
     setGameStatus(1);
@@ -50,13 +59,25 @@ const Main = () => {
     setFreeze(false);
   };
 
+  const submitName = (event) => {
+    event.preventDefault();
+    const name = document.querySelector('#inlineFormInputName').value;
+    const data = {
+      name: name,
+      speed: time / 1000,
+    };
+    ref.push(data);
+
+    resetGame();
+  };
+
   return (
     <div className={css.container}>
       <div className={css.time}>{(time / 1000).toFixed(2)}</div>
       <div
         className={`${css.currentNumber} text-light ${
-          !freeze && currentNumber === 60 ? 'bg-success' : ''
-        } ${!freeze && currentNumber !== 60 ? 'bg-primary' : ''} ${
+          !freeze && currentNumber === 'Finished' ? 'bg-success' : ''
+        } ${!freeze && currentNumber !== 'Finished' ? 'bg-primary' : ''} ${
           freeze ? 'bg-danger' : ''
         } font-weight-bold`}
       >
@@ -78,18 +99,39 @@ const Main = () => {
             freeze={freeze}
           />
         )}
-        {gameStatus === 2 && currentNumber === 60 && (
+        {gameStatus === 2 && currentNumber === 'Finished' && (
           <div className={`${css.winBox} text-light bg-success`}>
             <span className={`d-block mb-5`}>
-              You {currentNumber === 60 ? 'Win!' : 'Lose'}
+              You {currentNumber === 'Finished' ? 'Win!' : 'Lose'}
             </span>
             <span className={`d-block`}>
               Your Time: {(time / 1000).toFixed(2)}
             </span>
-            <button
-              className={`${css.reset} btn btn-light mt-5`}
-              onClick={resetGame}
-            >
+            <form className={`form-inline`}>
+              <div className={`form-row align-items-center`}>
+                <div className="my-1">
+                  <label className="sr-only" htmlFor="inlineFormInputName">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    id="inlineFormInputName"
+                    placeholder="Name"
+                  />
+                </div>
+                <div className="col-auto my-1">
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    onClick={submitName}
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </form>
+            <button className={`btn btn-light mt-5`} onClick={resetGame}>
               Reset
             </button>
           </div>
@@ -105,6 +147,11 @@ const Main = () => {
           Reset
         </button>
       )}
+
+      <div className={css.leaderboardContainer}>
+        Leaderboard
+        <Leaderboard db={ref} />
+      </div>
     </div>
   );
 };

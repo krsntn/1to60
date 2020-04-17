@@ -6,6 +6,8 @@
   "author": "krsntn <kanahan0110@gmail.com>",
   "dependencies": {
     "bootstrap": "^4.4.1",
+    "dotenv": "^8.2.0",
+    "firebase": "^7.14.1",
     "gatsby": "^2.19.45",
     "gatsby-image": "^2.2.44",
     "gatsby-plugin-manifest": "^2.2.48",
