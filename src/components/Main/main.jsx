@@ -64,7 +64,7 @@ const Main = () => {
     const name = document.querySelector('#inlineFormInputName').value;
     const data = {
       name: name,
-      speed: (time / 1000).toFixed(2),
+      speed: time / 1000,
     };
     ref.push(data);
 

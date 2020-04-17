@@ -47,7 +47,7 @@ const Leaderboard = (props) => {
       });
     } else {
       rows.push(
-        <tr className={css.emptyRow}>
+        <tr key={1} className={css.emptyRow}>
           <th scope="row"></th>
           <td></td>
           <td></td>
