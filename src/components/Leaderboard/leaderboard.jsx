@@ -37,7 +37,7 @@ const Leaderboard = (props) => {
       const dataTime = new Date(datetime);
       const now = new Date();
 
-      const minsAgo = Math.floor(Math.abs(now - dataTime) / (1000 * 60) + 1);
+      const minsAgo = Math.floor(Math.abs(now - dataTime) / (1000 * 60));
 
       let output = '';
       if (minsAgo < 1) {
