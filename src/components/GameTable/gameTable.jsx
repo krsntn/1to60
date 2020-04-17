@@ -63,9 +63,7 @@ const GameTable = (props) => {
                 freeze && firstArray[j] === currentNumber ? 'btn-danger' : ''
               } ${
                 freeze && firstArray[j] !== currentNumber ? 'btn-dark' : ''
-              } ${!freeze ? 'btn-primary' : ''} ${
-                !freeze && firstArray[j] === currentNumber ? 'btn-info' : ''
-              } btn-block`}
+              } ${!freeze ? 'btn-primary' : ''} btn-block`}
             >
               {firstArray[j]}
             </button>
