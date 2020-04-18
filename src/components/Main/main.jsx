@@ -58,13 +58,27 @@ const Main = () => {
   }, [gameStatus, intervalId]);
 
   const startGame = () => {
-    fetch('http://ip-api.com/json')
+    fetch('https://ipapi.co/json/')
       .then((response) => response.json())
       .then((data) => {
         if (data) {
           const log = {
             time: firebase.database.ServerValue.TIMESTAMP,
-            ...data,
+            ip: data.ip,
+            city: data.city,
+            region: data.region,
+            region_code: data.region_code,
+            country: data.country,
+            country_code: data.country_code,
+            country_name: data.country_name,
+            postal: data.postal,
+            latitude: data.latitude,
+            longitude: data.longitude,
+            timezone: data.timezone,
+            country_calling_code: data.country_calling_code,
+            currency: data.currency,
+            asn: data.asn,
+            org: data.org,
           };
           logDB.push(log);
         }
