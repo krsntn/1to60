@@ -8,7 +8,8 @@ import blockedNames from '../utils/blockedNames';
 
 startDB();
 const database = firebase.database();
-const ref = database.ref('leaderboard');
+const leaderboardDB = database.ref('leaderboard');
+const logDB = database.ref('log');
 
 const Main = () => {
   const [currentNumber, setCurrentNumber] = useState(1);
@@ -57,6 +58,18 @@ const Main = () => {
   }, [gameStatus, intervalId]);
 
   const startGame = () => {
+    fetch('http://ip-api.com/json')
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          const log = {
+            time: firebase.database.ServerValue.TIMESTAMP,
+            ...data,
+          };
+          logDB.push(log);
+        }
+      });
+
     setGameStatus(1);
   };
 
@@ -84,7 +97,7 @@ const Main = () => {
       speed: time / 1000,
       time: firebase.database.ServerValue.TIMESTAMP,
     };
-    ref.push(data);
+    leaderboardDB.push(data);
 
     resetGame();
   };
@@ -168,7 +181,7 @@ const Main = () => {
 
       <div className={css.leaderboardContainer}>
         Leaderboard
-        <Leaderboard db={ref} />
+        <Leaderboard db={leaderboardDB} />
       </div>
     </div>
   );
