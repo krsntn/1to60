@@ -3,6 +3,7 @@ import GameTable from '../GameTable';
 import Leaderboard from '../Leaderboard';
 import css from './main.module.scss';
 import firebase from 'firebase';
+import DeviceDetector from 'device-detector-js';
 import { startDB } from '../utils/firebase-config';
 import blockedNames from '../utils/blockedNames';
 
@@ -10,6 +11,7 @@ startDB();
 const database = firebase.database();
 const leaderboardDB = database.ref('leaderboard');
 const logDB = database.ref('log');
+const deviceDetector = new DeviceDetector();
 
 const Main = () => {
   const [currentNumber, setCurrentNumber] = useState(1);
@@ -62,23 +64,27 @@ const Main = () => {
       .then((response) => response.json())
       .then((data) => {
         if (data) {
+          const device = deviceDetector.parse(window.navigator.userAgent);
           const log = {
             time: firebase.database.ServerValue.TIMESTAMP,
-            ip: data.ip,
-            city: data.city,
-            region: data.region,
-            region_code: data.region_code,
-            country: data.country,
-            country_code: data.country_code,
-            country_name: data.country_name,
-            postal: data.postal,
-            latitude: data.latitude,
-            longitude: data.longitude,
-            timezone: data.timezone,
-            country_calling_code: data.country_calling_code,
-            currency: data.currency,
-            asn: data.asn,
-            org: data.org,
+            geolocation: {
+              ip: data.ip,
+              city: data.city,
+              region: data.region,
+              region_code: data.region_code,
+              country: data.country,
+              country_code: data.country_code,
+              country_name: data.country_name,
+              postal: data.postal,
+              latitude: data.latitude,
+              longitude: data.longitude,
+              timezone: data.timezone,
+              country_calling_code: data.country_calling_code,
+              currency: data.currency,
+              asn: data.asn,
+              org: data.org,
+            },
+            device: device,
           };
           logDB.push(log);
         }
