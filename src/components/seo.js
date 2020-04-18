@@ -1,88 +1,81 @@
-/**
- * SEO component that queries for data with
- *  Gatsby's useStaticQuery React hook
- *
- * See: https://www.gatsbyjs.org/docs/use-static-query/
- */
-
-import React from "react"
-import PropTypes from "prop-types"
-import Helmet from "react-helmet"
-import { useStaticQuery, graphql } from "gatsby"
+import React from 'react';
+import PropTypes from 'prop-types';
+import Helmet from 'react-helmet';
+import { useStaticQuery, graphql } from 'gatsby';
 
 function SEO({ description, lang, meta, title }) {
-  const { site } = useStaticQuery(
+  const { file } = useStaticQuery(
     graphql`
       query {
-        site {
-          siteMetadata {
-            title
-            description
-            author
+        file(name: { eq: "icon" }) {
+          childImageSharp {
+            fluid {
+              src
+            }
           }
         }
       }
     `
-  )
+  );
 
-  const metaDescription = description || site.siteMetadata.description
+  let src = null;
+  if (
+    file &&
+    file.childImageSharp &&
+    file.childImageSharp.fluid &&
+    file.childImageSharp.fluid.src
+  ) {
+    src = file.childImageSharp.fluid.src;
+  }
 
   return (
     <Helmet
       htmlAttributes={{
         lang,
       }}
-      title={title}
-      titleTemplate={`%s | ${site.siteMetadata.title}`}
-      meta={[
-        {
-          name: `description`,
-          content: metaDescription,
-        },
-        {
-          property: `og:title`,
-          content: title,
-        },
-        {
-          property: `og:description`,
-          content: metaDescription,
-        },
-        {
-          property: `og:type`,
-          content: `website`,
-        },
-        {
-          name: `twitter:card`,
-          content: `summary`,
-        },
-        {
-          name: `twitter:creator`,
-          content: site.siteMetadata.author,
-        },
-        {
-          name: `twitter:title`,
-          content: title,
-        },
-        {
-          name: `twitter:description`,
-          content: metaDescription,
-        },
-      ].concat(meta)}
-    />
-  )
+    >
+      {/* <!-- Primary Meta Tags --> */}
+      <title>1to60 - Game</title>
+      <meta name="title" content="1to60 - Game" />
+      <meta
+        name="description"
+        content="Clicking from 1 to 60 as fast as you can. Challenge your friends"
+      />
+
+      {/* <!-- Open Graph / Facebook --> */}
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content="https://1to60.tk" />
+      <meta property="og:title" content="1to60 - Game" />
+      <meta
+        property="og:description"
+        content="Clicking from 1 to 60 as fast as you can. Challenge your friends"
+      />
+      <meta property="og:image" content={src} />
+
+      {/* <!-- Twitter --> */}
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content="https://1to60.tk" />
+      <meta property="twitter:title" content="1to60 - Game" />
+      <meta
+        property="twitter:description"
+        content="Clicking from 1 to 60 as fast as you can. Challenge your friends"
+      />
+      <meta property="twitter:image" content={src} />
+    </Helmet>
+  );
 }
 
 SEO.defaultProps = {
   lang: `en`,
   meta: [],
   description: ``,
-}
+};
 
 SEO.propTypes = {
   description: PropTypes.string,
   lang: PropTypes.string,
   meta: PropTypes.arrayOf(PropTypes.object),
   title: PropTypes.string.isRequired,
-}
+};
 
-export default SEO
+export default SEO;
