@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import css from './logTable.module.scss';
 import firebase from 'firebase';
 import { startDB } from '../utils/firebase-config';
-import 'bootstrap';
 
 startDB();
 const database = firebase.database();
