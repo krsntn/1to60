@@ -32,29 +32,6 @@ const Leaderboard = (props) => {
     }
   }, [db]);
 
-  const convertDateTime = (datetime) => {
-    if (datetime) {
-      const dataTime = new Date(datetime);
-      const now = new Date();
-
-      const minsAgo = Math.floor(Math.abs(now - dataTime) / (1000 * 60));
-
-      let output = '';
-      if (minsAgo < 1) {
-        output = 'few seconds ago';
-      } else if (minsAgo < 60) {
-        output = `${Math.floor(minsAgo)} min${minsAgo === 1 ? '' : 's'} ago`;
-      } else if (minsAgo / 60 < 24) {
-        const hour = minsAgo / 60;
-        output = `${Math.floor(hour)} hr${hour === 1 ? '' : 's'} ago`;
-      } else if (minsAgo / 60 / 24 < 7) {
-        const day = minsAgo / 60 / 24;
-        output = `${Math.floor(day)} day${day === 1 ? '' : 's'} ago`;
-      }
-      return output;
-    }
-  };
-
   const createRow = () => {
     let rows = [];
     if (data.length > 0) {
@@ -63,13 +40,13 @@ const Leaderboard = (props) => {
           <tr key={index}>
             <th scope="row">{index + 1}</th>
             <td>
-              <div className={css.name}>{record.name}</div>
-              {/* <span className={css.tooltips}>{record.name}</span> */}
+              <div className={css.name} data-name={record.name}>
+                {record.name}
+              </div>
             </td>
             <td className={`text-primary`}>
               {parseFloat(record.speed).toFixed(2)}
             </td>
-            <td className={css.datetime}>{convertDateTime(record.time)}</td>
           </tr>
         );
       });
@@ -92,7 +69,6 @@ const Leaderboard = (props) => {
           <th scope="col"></th>
           <th scope="col">Name</th>
           <th scope="col">Speed</th>
-          <th scope="col">Time</th>
         </tr>
       </thead>
       <tbody>{createRow()}</tbody>

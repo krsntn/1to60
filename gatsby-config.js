@@ -9,7 +9,7 @@ require('dotenv').config({
 
 module.exports = {
   siteMetadata: {
-    title: `1to60`,
+    title: `1to60 - Game`,
     description: `Click from 1 to 60 as fast as you can`,
     author: `krsntn`,
   },
@@ -27,7 +27,7 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `1to60`,
+        name: `1to60 - Game`,
         short_name: `1to60`,
         start_url: `/`,
         background_color: `#007bff`,

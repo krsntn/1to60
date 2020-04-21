@@ -9,6 +9,21 @@
   background: #f1f1f1;
   font-size: 18px;
   margin: 0;
+  table-layout: fixed;
+
+  thead {
+    th {
+      &:nth-child(1) {
+        width: 20%;
+      }
+      &:nth-child(2) {
+        width: 50%;
+      }
+      &:nth-child(3) {
+        width: 30%;
+      }
+    }
+  }
 
   tbody {
     th,
@@ -16,37 +31,27 @@
       padding-top: 2px;
       padding-bottom: 2px;
       position: relative;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
 
       &:nth-child(1) {
-        width: 10px;
+        text-align: center;
       }
-      &:nth-child(3) {
-        width: 85px;
-      }
-      &:hover {
-        .tooltips {
-          visibility: visible;
-        }
-      }
+
       .name {
-        max-width: 100px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-      }
 
-      .tooltips {
-        visibility: hidden;
-        border-radius: 5px;
-        padding: 5px 10px;
-        position: absolute;
-        z-index: 1;
-        font-size: 1rem;
-        background: #212529;
-        color: $background;
+        &:hover {
+          &::before {
+            content: attr(data-name);
+            background: #222;
+            color: $background;
+            position: absolute;
+            padding: 4px 10px;
+            border-radius: 6px;
+            top: -100%;
+          }
+        }
       }
     }
 
