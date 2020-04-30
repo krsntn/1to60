@@ -1,36 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import css from './leaderboard.module.scss';
 
-function errData(err) {
-  console.error(err);
-}
-
 const Leaderboard = (props) => {
-  const { db } = props;
-  const [data, setData] = useState([]);
-
-  const gotData = (data) => {
-    const localData = [];
-    const records = data.val();
-    if (records) {
-      const keys = Object.keys(records);
-      for (const key of keys) {
-        localData.push(records[key]);
-      }
-      const finalOutput = localData.sort((a, b) =>
-        a.speed > b.speed ? 1 : -1
-      );
-      setData(finalOutput);
-    }
-  };
-
-  useEffect(() => {
-    if (db) {
-      db.orderByChild('speed')
-        .limitToFirst(20)
-        .on('value', gotData, errData);
-    }
-  }, [db]);
+  const { data } = props;
 
   const createRow = () => {
     let rows = [];
@@ -81,4 +53,4 @@ const Leaderboard = (props) => {
   );
 };
 
-export default Leaderboard;
+export default React.memo(Leaderboard);

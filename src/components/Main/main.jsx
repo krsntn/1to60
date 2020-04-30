@@ -13,12 +13,32 @@ const leaderboardDB = database.ref('leaderboard');
 const logDB = database.ref('log');
 const deviceDetector = new DeviceDetector();
 
+function errData(err) {
+  console.error(err);
+}
+
 const Main = () => {
   const [currentNumber, setCurrentNumber] = useState(1);
   const [time, setTime] = useState(0);
   const [intervalId, setIntervalId] = useState();
   const [gameStatus, setGameStatus] = useState(0); // 0: ready, 1: game started, 2: game over
   const [freeze, setFreeze] = useState(false);
+  const [data, setData] = useState([]);
+
+  const gotData = (data) => {
+    const localData = [];
+    const records = data.val();
+    if (records) {
+      const keys = Object.keys(records);
+      for (const key of keys) {
+        localData.push({ name: key, ...records[key] });
+      }
+      const finalOutput = localData.sort((a, b) =>
+        a.speed > b.speed ? 1 : -1
+      );
+      setData(finalOutput);
+    }
+  };
 
   const updateCurrentNumber = (selectedNumber) => {
     if (selectedNumber === currentNumber) {
@@ -36,6 +56,14 @@ const Main = () => {
       setTime(0);
     }
   };
+
+  useEffect(() => {
+    console.log('inside');
+    leaderboardDB
+      .orderByChild('speed')
+      .limitToFirst(20)
+      .on('value', gotData, errData);
+  }, []);
 
   useEffect(() => {
     if (gameStatus === 1 && intervalId === undefined) {
@@ -112,12 +140,24 @@ const Main = () => {
       return;
     }
 
-    const data = {
-      name: name,
+    const newData = {
       speed: time / 1000,
       time: firebase.database.ServerValue.TIMESTAMP,
     };
-    leaderboardDB.push(data);
+
+    firebase
+      .database()
+      .ref(`leaderboard/${name}`)
+      .once('value', (data) => {
+        if (data.val()) {
+          const record = data.val();
+          if (newData.speed < record.speed) {
+            database.ref(`leaderboard/${name}`).set(newData);
+          }
+        } else {
+          database.ref(`leaderboard/${name}`).set(newData);
+        }
+      });
 
     resetGame();
   };
@@ -201,7 +241,7 @@ const Main = () => {
 
       <div className={css.leaderboardContainer}>
         Leaderboard
-        <Leaderboard db={leaderboardDB} />
+        <Leaderboard data={data} />
       </div>
     </div>
   );
