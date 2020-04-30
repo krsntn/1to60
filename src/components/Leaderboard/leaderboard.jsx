@@ -53,9 +53,14 @@ const Leaderboard = (props) => {
     } else {
       rows.push(
         <tr key={1} className={css.emptyRow}>
-          <th scope="row"></th>
-          <td></td>
-          <td></td>
+          <th scope="row" colSpan="100%">
+            <div className={css.lds_ellipsis}>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+          </th>
         </tr>
       );
     }
