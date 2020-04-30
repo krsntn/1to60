@@ -60,7 +60,6 @@ const LogTable = (props) => {
 
   const displayDevice = (data) => {
     if (data) {
-      console.log('data', data);
       const output = [];
       const keys = Object.keys(data);
       for (const key of keys) {
