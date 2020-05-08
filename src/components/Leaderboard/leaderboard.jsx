@@ -10,7 +10,9 @@ const Leaderboard = (props) => {
       rows = data.map((record, index) => {
         return (
           <tr key={index}>
-            <th scope="row">{index + 1}</th>
+            <th scope="row" className="pb-2">
+              {index + 1}
+            </th>
             <td>
               <div className={css.name} data-name={record.name}>
                 {record.name}
