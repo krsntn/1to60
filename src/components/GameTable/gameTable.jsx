@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import css from './gameTable.module.scss';
+import { GameContext } from '../../stores/gameContext';
 
 const generateArray = (startNum, totalSize) => {
   const array = [];
@@ -12,7 +13,10 @@ const generateArray = (startNum, totalSize) => {
 };
 
 const GameTable = (props) => {
-  const { updateCurrentNumber, currentNumber, freeze } = props;
+  const gameContext = useContext(GameContext);
+  const { currentNumber, freeze } = gameContext.state;
+  const { updateCurrentNumber } = props;
+
   const [firstArray, setFirstArray] = useState([]);
   const [secondArray, setSecondArray] = useState([]);
   const [thirdArray, setThirdArray] = useState([]);
@@ -81,4 +85,4 @@ const GameTable = (props) => {
   );
 };
 
-export default GameTable;
+export default React.memo(GameTable);

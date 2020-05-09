@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import css from './leaderboard.module.scss';
+import { LeaderboardContext } from '../../stores/leaderboardContext';
 
 const Leaderboard = (props) => {
-  const { data } = props;
+  const leaderboardContext = useContext(LeaderboardContext);
+  const { data } = leaderboardContext.state;
 
   const createRow = () => {
     let rows = [];
@@ -42,16 +44,19 @@ const Leaderboard = (props) => {
   };
 
   return (
-    <table className={`${css.table} table table-borderless`}>
-      <thead>
-        <tr>
-          <th scope="col"></th>
-          <th scope="col">Name</th>
-          <th scope="col">Speed</th>
-        </tr>
-      </thead>
-      <tbody>{createRow()}</tbody>
-    </table>
+    <div className={css.leaderboardContainer}>
+      Leaderboard
+      <table className={`${css.table} table table-borderless`}>
+        <thead>
+          <tr>
+            <th scope="col"></th>
+            <th scope="col">Name</th>
+            <th scope="col">Speed</th>
+          </tr>
+        </thead>
+        <tbody>{createRow()}</tbody>
+      </table>
+    </div>
   );
 };
 

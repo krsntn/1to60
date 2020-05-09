@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import GameTable from '../GameTable';
-import Leaderboard from '../Leaderboard';
 import css from './main.module.scss';
 import firebase from 'firebase';
 import DeviceDetector from 'device-detector-js';
 import { startDB } from '../utils/firebase-config';
 import blockedNames from '../utils/blockedNames';
+import { GameContext } from '../../stores/gameContext';
+import { TimeContext } from '../../stores/timeContext';
+import { LeaderboardContext } from '../../stores/leaderboardContext';
 
 startDB();
 const database = firebase.database();
@@ -18,74 +20,85 @@ function errData(err) {
 }
 
 const Main = () => {
-  const [currentNumber, setCurrentNumber] = useState(1);
-  const [time, setTime] = useState(0);
   const [intervalId, setIntervalId] = useState();
-  const [gameStatus, setGameStatus] = useState(0); // 0: ready, 1: game started, 2: game over
-  const [freeze, setFreeze] = useState(false);
-  const [data, setData] = useState([]);
 
-  const gotData = (data) => {
-    const localData = [];
-    const records = data.val();
-    if (records) {
-      const keys = Object.keys(records);
-      for (const key of keys) {
-        localData.push({ name: key, ...records[key] });
+  const gameContext = useContext(GameContext);
+  const { state, dispatch } = gameContext;
+  const { currentNumber, freeze, gameStatus } = state;
+
+  const timeContext = useContext(TimeContext);
+  const { state: timeState, dispatch: timeDispatch } = timeContext;
+  const { time } = timeState;
+
+  const leaderboardContext = useContext(LeaderboardContext);
+  const { dispatch: leaderboardDispatch } = leaderboardContext;
+
+  const gotData = useCallback(
+    (data) => {
+      const localData = [];
+      const records = data.val();
+      if (records) {
+        const keys = Object.keys(records);
+        for (const key of keys) {
+          localData.push({ name: key, ...records[key] });
+        }
+        const finalOutput = localData.sort((a, b) =>
+          a.speed > b.speed ? 1 : -1
+        );
+        leaderboardDispatch({ type: 'setData', payload: finalOutput });
       }
-      const finalOutput = localData.sort((a, b) =>
-        a.speed > b.speed ? 1 : -1
-      );
-      setData(finalOutput);
-    }
-  };
+    },
+    [leaderboardDispatch]
+  );
 
-  const updateCurrentNumber = (selectedNumber) => {
-    if (selectedNumber === currentNumber) {
-      if (currentNumber !== 60) {
-        setCurrentNumber((prevState) => ++prevState);
+  const updateCurrentNumber = useCallback(
+    (selectedNumber) => {
+      if (selectedNumber === currentNumber) {
+        if (selectedNumber < 60) {
+          dispatch({
+            type: 'updateCurrentNumber',
+            payload: selectedNumber + 1,
+          });
+        } else {
+          // win
+          dispatch({ type: 'win' });
+        }
       } else {
-        // win
-        setCurrentNumber('Finished');
-        setGameStatus(2);
+        // lose
+        clearInterval(intervalId);
+        dispatch({ type: 'lose' });
+        timeDispatch({ type: 'updateTime', payload: 0 });
       }
-    } else {
-      // lose
-      clearInterval(intervalId);
-      setFreeze(true);
-      setTime(0);
-    }
-  };
+    },
+    [currentNumber, dispatch, timeDispatch, intervalId]
+  );
 
   useEffect(() => {
-    console.log('inside');
     leaderboardDB
       .orderByChild('speed')
       .limitToFirst(20)
       .on('value', gotData, errData);
-  }, []);
+  }, [gotData]);
 
   useEffect(() => {
     if (gameStatus === 1 && intervalId === undefined) {
       // start game
-      setFreeze(false);
-      setTime(0);
-      setCurrentNumber(1);
+      dispatch({ type: 'start' });
+      timeDispatch({ type: 'updateTime', payload: 0 });
       const id = setInterval(() => {
-        setTime((prevTime) => prevTime + 10);
+        timeDispatch({ type: 'updateTime' });
       }, 10);
       setIntervalId(id);
     } else if (gameStatus === 0) {
       // back to menu
       clearInterval(intervalId);
-      setIntervalId();
-      setTime(0);
+      dispatch({ type: 'reset' });
     } else if (gameStatus === 2) {
       // end game
       clearInterval(intervalId);
       setIntervalId();
     }
-  }, [gameStatus, intervalId]);
+  }, [gameStatus, intervalId, dispatch, timeDispatch]);
 
   const startGame = () => {
     fetch('https://ipapi.co/json/')
@@ -118,13 +131,12 @@ const Main = () => {
         }
       });
 
-    setGameStatus(1);
+    dispatch({ type: 'start' });
   };
 
   const resetGame = () => {
-    setGameStatus(0);
-    setCurrentNumber(1);
-    setFreeze(false);
+    dispatch({ type: 'reset' });
+    timeDispatch({ type: 'updateTime', payload: 0 });
   };
 
   const submitName = (event) => {
@@ -164,7 +176,6 @@ const Main = () => {
 
   return (
     <div className={css.container}>
-      <div className={css.time}>{(time / 1000).toFixed(2)}</div>
       <div
         className={`${css.currentNumber} text-light ${
           !freeze && currentNumber === 'Finished' ? 'bg-success' : ''
@@ -184,13 +195,9 @@ const Main = () => {
           </button>
         )}
         {gameStatus === 1 && (
-          <GameTable
-            currentNumber={currentNumber}
-            updateCurrentNumber={updateCurrentNumber}
-            freeze={freeze}
-          />
+          <GameTable updateCurrentNumber={updateCurrentNumber} />
         )}
-        {gameStatus === 2 && currentNumber === 'Finished' && (
+        {gameStatus === 2 && currentNumber === 60 && (
           <div className={`${css.winBox} text-light bg-success`}>
             <span className={`d-block mb-5`}>
               You {currentNumber === 'Finished' ? 'Win!' : 'Lose'}
@@ -238,11 +245,6 @@ const Main = () => {
           Reset
         </button>
       )}
-
-      <div className={css.leaderboardContainer}>
-        Leaderboard
-        <Leaderboard data={data} />
-      </div>
     </div>
   );
 };
