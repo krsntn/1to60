@@ -20,11 +20,18 @@ const GameTable = (props) => {
   const [firstArray, setFirstArray] = useState([]);
   const [secondArray, setSecondArray] = useState([]);
   const [thirdArray, setThirdArray] = useState([]);
+  const [mouseClick, setMouseClick] = useState(false);
 
   useEffect(() => {
     setFirstArray(generateArray(1, 20));
     setSecondArray(generateArray(21, 20));
     setThirdArray(generateArray(41, 20));
+  }, []);
+
+  useEffect(() => {
+    document.querySelector('#gameTable').addEventListener('mouseup', () => {
+      setMouseClick(true);
+    });
   }, []);
 
   const createRow = () => {
@@ -36,6 +43,9 @@ const GameTable = (props) => {
   };
 
   const onClick = (selectedNumber) => {
+    if (!mouseClick) return;
+
+    setMouseClick(false);
     const newArray = [...firstArray];
     const index = firstArray.indexOf(selectedNumber);
     const nextAppearNumber = currentNumber + 20;
@@ -79,7 +89,7 @@ const GameTable = (props) => {
   };
 
   return (
-    <table className={css.table}>
+    <table id="gameTable" className={css.table}>
       <tbody>{createRow()}</tbody>
     </table>
   );
